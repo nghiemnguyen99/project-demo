@@ -1,7 +1,7 @@
 package container
 
 import (
-	"sum/internal/main-service/handler"
+	"sum/internal/pkg/handler"
 )
 
 type HandlerContainer struct {

@@ -1,11 +1,14 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"strconv"
+	subjectEntity "sum/internal/modules/subjects/entity"
 	subjectRepository "sum/internal/modules/subjects/repository"
-	"sum/internal/modules/users/entity"
+	userEntity "sum/internal/modules/users/entity"
 	userRepository "sum/internal/modules/users/repository"
+	"sum/internal/pkg/db/redis"
 
 	"github.com/gin-gonic/gin"
 )
@@ -31,6 +34,8 @@ type HTTPUsersHandler struct {
 }
 
 func (h *HTTPUsersHandler) GetUserAndSubject(c *gin.Context) {
+	var user userEntity.Users
+	var subject subjectEntity.Subjects
 	userID, err := strconv.Atoi(c.Param("user_id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -47,20 +52,31 @@ func (h *HTTPUsersHandler) GetUserAndSubject(c *gin.Context) {
 		return
 	}
 
-	user, err := h.UsersRepo.GetUserByID(userID)
+	err = redis.GetFromRedis("users_"+strconv.Itoa(userID), &user)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		log.Fatalf("get user from redis failed")
 	}
-
-	subject, err := h.SubjectRepo.GetSubjectByID(subjectID)
+	if user.MSSV == nil {
+		user, err = h.UsersRepo.GetUserByID(userID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+	}
+	err = redis.GetFromRedis("subject_"+strconv.Itoa(subjectID), &subject)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		log.Fatalf("get subject from redis failed")
+	}
+	if subject.Name == nil {
+		subject, err = h.SubjectRepo.GetSubjectByID(subjectID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, map[string]interface{}{
@@ -81,7 +97,7 @@ func (h *HTTPUsersHandler) CreateUser(c *gin.Context) {
 		})
 		return
 	}
-	user := entity.Users{
+	user := userEntity.Users{
 		FirstName: &firstName,
 		LastName:  &lastName,
 		MSSV:      &mssv,

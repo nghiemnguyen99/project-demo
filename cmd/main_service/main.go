@@ -1,8 +1,10 @@
 package main
 
 import (
+	"context"
 	"database/sql"
-	"sum/internal/main-service/container"
+	"sum/internal/pkg/container"
+	"sum/internal/pkg/db/redis"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -12,6 +14,8 @@ import (
 )
 
 func main() {
+
+	//connect mysql
 	database, err := sql.Open("mysql", "root:abc123@tcp(127.0.0.1:3306)/")
 	if err != nil {
 		panic(err.Error())
@@ -48,6 +52,10 @@ func main() {
 	if err = m.Up(); err != nil {
 		panic(err.Error())
 	}
+
+	//connect redis
+	ctx := context.Background()
+	redis.ConnectRedis(ctx)
 
 	router := gin.Default()
 	db := container.NewDBContainer(database)
