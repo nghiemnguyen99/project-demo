@@ -13,7 +13,6 @@ type DBInterface interface {
 	GetByMSSV(mssv string) (entity.Users, error)
 	GetByID(subjectID int) (entity.Users, error)
 	Create(user entity.Users) (entity.Users, error)
-	Update(user entity.Users) (entity.Users, error)
 }
 
 func NewDBInterface(db *sql.DB) DBInterface {
@@ -49,8 +48,4 @@ func (db *DB) Create(user entity.Users) (entity.Users, error) {
 	id, err := res.LastInsertId()
 	user.ID = int(id)
 	return user, err
-}
-
-func (db *DB) Update(user entity.Users) (entity.Users, error) {
-	return entity.Users{}, nil
 }

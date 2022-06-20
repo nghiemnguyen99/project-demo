@@ -1,65 +1,26 @@
 package main
 
 import (
-	"context"
-	"database/sql"
+	"log"
 	"sum/internal/pkg/container"
-	"sum/internal/pkg/db/redis"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"google.golang.org/grpc"
 )
 
 func main() {
 
-	//connect mysql
-	database, err := sql.Open("mysql", "root:abc123@tcp(127.0.0.1:3306)/")
+	conn, err := grpc.Dial("localhost:50069", grpc.WithInsecure())
 	if err != nil {
-		panic(err.Error())
+		log.Fatalf("failed to connect : %v", err)
 	}
-
-	_, err = database.Exec("DROP DATABASE IF EXISTS demo")
-	if err != nil {
-		panic(err)
-	}
-	_, err = database.Exec("CREATE DATABASE demo")
-	if err != nil {
-		panic(err)
-	}
-	_, err = database.Exec("USE demo")
-	if err != nil {
-		panic(err)
-	}
-	defer database.Close()
-
-	//create table by migration
-	driver, err := mysql.WithInstance(database, &mysql.Config{})
-	if err != nil {
-		panic(err.Error())
-	}
-	m, err := migrate.NewWithDatabaseInstance(
-		"file:///grpc-tutorial/internal/main-service/pkg/migrations",
-		"mysql",
-		driver,
-	)
-
-	if err != nil {
-		panic(err.Error())
-	}
-	if err = m.Up(); err != nil {
-		panic(err.Error())
-	}
-
-	//connect redis
-	ctx := context.Background()
-	redis.ConnectRedis(ctx)
+	defer conn.Close()
 
 	router := gin.Default()
-	db := container.NewDBContainer(database)
-	repository := container.NewRepositoryContainer(db)
+	clientContainer := container.NewClientContainer(conn)
+	repository := container.NewRepositoryContainer(clientContainer)
 	handler := container.NewHandlerContainer(repository)
 	r := router.Group("/api")
 	{
@@ -67,7 +28,7 @@ func main() {
 		userRouter := r.Group("/users")
 		{
 			userRouter.POST("/create", userHandler.CreateUser)
-			userRouter.GET("/get/:user_id/:subject_id", userHandler.GetUserAndSubject)
+			userRouter.GET("/get/:user_id", userHandler.GetUserByID)
 		}
 
 		subjectHandler := handler.SubjectHandler

@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package sumpb;
+
+option go_package="redis/sumpb";
+
+message Users {
+   string FirstName = 2;
+   string LastName = 3;
+   string MSSV = 4;
+   int32 SubjectID = 5;
+}
+
+message UsersRequest {
+    Users user = 1;
+}
+
+message UsersResponse {
+    int32 ID = 1;
+    string FirstName = 2;
+    string LastName = 3;
+    string MSSV = 4;
+    int32 SubjectID = 5;
+}
+
+// get user by id
+message GetUserById {
+    int32 userID = 1;
+}
+
+message GetUserByIDRequest {
+    GetUserById userID = 1;
+}
+ 
+service CreateService {
+    rpc Create(UsersRequest) returns (UsersResponse) {}
+    rpc GetUserByID(GetUserByIDRequest) returns (UsersResponse) {}
+}

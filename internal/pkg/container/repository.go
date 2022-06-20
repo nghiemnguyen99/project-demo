@@ -1,18 +1,18 @@
 package container
 
 import (
-	subjectRepo "sum/internal/modules/subjects/repository"
+	subjectsRepo "sum/internal/modules/subjects/repository"
 	usersRepo "sum/internal/modules/users/repository"
 )
 
 type RepositoryContainer struct {
 	UsersRepo   usersRepo.UsersRepositoryInterface
-	SubjectRepo subjectRepo.SubjectsRepositoryInterface
+	SubjectRepo subjectsRepo.SubjectsRepositoryInterface
 }
 
-func NewRepositoryContainer(db *DatabaseContainer) *RepositoryContainer {
+func NewRepositoryContainer(clientContainer *ClientContainer) *RepositoryContainer {
 	return &RepositoryContainer{
-		UsersRepo:   usersRepo.NewUsersRepository(db.UsersDB),
-		SubjectRepo: subjectRepo.NewSubjectRepository(db.SubjectsDB),
+		UsersRepo:   usersRepo.NewUsersRepository(clientContainer.UserClient),
+		SubjectRepo: subjectsRepo.NewSubjectRepository(clientContainer.SubjectClient),
 	}
 }

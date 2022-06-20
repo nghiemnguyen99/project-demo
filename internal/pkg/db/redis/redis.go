@@ -26,18 +26,18 @@ func ConnectRedis(ctx context.Context) {
 }
 
 func SetToRedis(key string, val interface{}) error {
-	return redisClient.Set(key, val, 0).Err()
-}
-
-func GetFromRedis(key string, dest interface{}) error {
-	if redisClient.Exists(key).Val() == 0 {
-		return nil
-	}
-	value, err := redisClient.Get(key).Result()
+	p, err := json.Marshal(val)
 	if err != nil {
 		return err
 	}
+	return redisClient.Set(key, p, 0).Err()
+}
+
+func GetFromRedis(key string, dest interface{}) error {
+	value, err := redisClient.Get(key).Result()
+	if err != nil {
+		fmt.Println("==============nnnnnnn")
+	}
 	p := []byte(value)
 	return json.Unmarshal(p, dest)
-
 }
