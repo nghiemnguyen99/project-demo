@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"net"
-	"strconv"
-	"sum/internal/modules/users/entity"
 	"sum/internal/pkg/container"
 	"sum/internal/pkg/db/redis"
+	redisEntity "sum/redis/entity"
+	"sum/redis/server"
 	"sum/redis/sumpb"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,12 +17,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"google.golang.org/grpc"
 )
-
-type server struct {
-	DB *container.DatabaseContainer
-}
-
-var dbContainer server
 
 func main() {
 	//connect mysql
@@ -65,9 +58,10 @@ func main() {
 	}
 
 	//connect redis
-
 	ctx := context.Background()
 	redis.ConnectRedis(ctx)
+
+	var dbContainer redisEntity.DBContainer
 	dbContainer.DB = container.NewDBContainer(database)
 
 	lis, err := net.Listen("tcp", "localhost:50069")
@@ -76,67 +70,9 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	sumpb.RegisterCreateServiceServer(s, &server{})
+	sumpb.RegisterCreateServiceServer(s, &server.Server{})
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to start server %s", err)
 	}
-}
-
-func (*server) Create(ctx context.Context, req *sumpb.UsersRequest) (*sumpb.UsersResponse, error) {
-	firstName := req.GetUser().GetFirstName()
-	lastName := req.GetUser().GetLastName()
-	mssv := req.GetUser().GetMSSV()
-	subjectID := int(req.GetUser().GetSubjectID())
-
-	user := entity.Users{
-		FirstName: &firstName,
-		LastName:  &lastName,
-		MSSV:      &mssv,
-		SubjectID: &subjectID,
-	}
-
-	res, err := dbContainer.DB.UsersDB.Create(user)
-	if err != nil {
-		return &sumpb.UsersResponse{}, err
-	}
-
-	return &sumpb.UsersResponse{
-		ID:        int32(res.ID),
-		LastName:  req.GetUser().GetLastName(),
-		FirstName: req.GetUser().GetFirstName(),
-		MSSV:      req.GetUser().GetMSSV(),
-		SubjectID: req.GetUser().GetSubjectID(),
-	}, redis.SetToRedis("users_"+strconv.Itoa(int(res.ID)), res)
-}
-
-func (*server) GetUserByID(ctx context.Context, req *sumpb.GetUserByIDRequest) (*sumpb.UsersResponse, error) {
-	userID := req.GetUserID().GetUserID()
-	var user entity.Users
-
-	err := redis.GetFromRedis("users_"+strconv.Itoa(int(userID)), &user)
-	if err != nil {
-		fmt.Println(err)
-	}
-	if user.ID > 0 {
-		return &sumpb.UsersResponse{
-			ID:        int32(user.ID),
-			FirstName: *user.FirstName,
-			LastName:  *user.LastName,
-			MSSV:      *user.MSSV,
-			SubjectID: int32(*user.SubjectID),
-		}, nil
-	}
-
-	res, err := dbContainer.DB.UsersDB.GetByID(int(userID))
-	if err != nil {
-		return &sumpb.UsersResponse{}, err
-	}
-	return &sumpb.UsersResponse{
-		ID:        int32(res.ID),
-		FirstName: *res.FirstName,
-		LastName:  *res.LastName,
-		MSSV:      *res.MSSV,
-		SubjectID: int32(*res.SubjectID),
-	}, redis.SetToRedis("users_"+strconv.Itoa(int(userID)), res)
 }
