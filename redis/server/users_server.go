@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"strconv"
 	userEntity "sum/internal/modules/users/entity"
+	"sum/internal/pkg/container"
 	"sum/internal/pkg/db/redis"
-	"sum/redis/entity"
 	"sum/redis/pkg"
 	"sum/redis/sumpb"
 )
 
 type Server struct {
-	entity.DBContainer
+	DB *container.DatabaseContainer
 }
 
 var cr, u = make(chan interface{}), make(chan interface{})
@@ -35,7 +35,7 @@ func (s *Server) Create(ctx context.Context, req *sumpb.UsersRequest) (*sumpb.Us
 		return &sumpb.UsersResponse{}, err
 	}
 
-	err = pkg.HanlderRedis(cr, u, "users_"+strconv.Itoa(int(res.ID)))
+	go pkg.HanlderRedis(cr, u, "users_"+strconv.Itoa(int(res.ID)))
 	cr <- res
 	return &sumpb.UsersResponse{
 		ID:        int32(res.ID),
@@ -69,7 +69,7 @@ func (s *Server) GetUserByID(ctx context.Context, req *sumpb.GetUserByIDRequest)
 		return &sumpb.UsersResponse{}, err
 	}
 
-	err = pkg.HanlderRedis(cr, u, "users_"+strconv.Itoa(int(res.ID)))
+	go pkg.HanlderRedis(cr, u, "users_"+strconv.Itoa(int(res.ID)))
 	cr <- res
 
 	return &sumpb.UsersResponse{

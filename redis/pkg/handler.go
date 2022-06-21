@@ -4,7 +4,7 @@ import (
 	"sum/internal/pkg/db/redis"
 )
 
-func HanlderRedis(cr, u chan interface{}, key string) error {
+func HanlderRedis(cr, u chan interface{}, key string) {
 	for {
 		select {
 		case data := <-cr:
@@ -12,15 +12,15 @@ func HanlderRedis(cr, u chan interface{}, key string) error {
 		case data := <-u:
 			UpdateDataFromRedis(data, key)
 		default:
-			return nil
+			return
 		}
 	}
 }
 
-func CreateDataToRedis(data interface{}, key string) error {
-	return redis.SetToRedis(key, data)
+func CreateDataToRedis(data interface{}, key string) {
+	redis.SetToRedis(key, data)
 }
 
-func UpdateDataFromRedis(data interface{}, key string) error {
-	return nil
+func UpdateDataFromRedis(data interface{}, key string) {
+	return
 }

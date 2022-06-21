@@ -8,10 +8,12 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Jun 20 16:18:13 2022
+# Make data base, printed on Tue Jun 21 12:28:35 2022
 
 # Variables
 
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
 SYSTEMDRIVE = C:
 # environment
@@ -21,7 +23,7 @@ USERPROFILE = C:\Users\Admin
 # environment
 LOCALAPPDATA = C:\Users\Admin\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-3113afff-84dd-4852-9ecb-e41b1df8a171-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-5fbc20f1-8897-4b1b-9a29-aece93c7ce2a-sock
 # environment
 VSCODE_CWD = E:\project-demo
 # environment
@@ -39,7 +41,9 @@ GOPATH = C:\Users\Admin\go
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_6224_UUUJDSDXZOAQBNVU
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_12072_UQYKZSSUNBKHAMUS
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -93,7 +97,7 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 6224
+VSCODE_PID = 12072
 # automatic
 ?D = $(patsubst %/,%,$(patsubst %\,%,$(dir $?)))
 # environment
@@ -179,7 +183,8 @@ NUMBER_OF_PROCESSORS = 12
 # environment
 PUBLIC = C:\Users\Public
 # environment
-MOZ_PLUGIN_PATH = C:\Program Files (x86)\Foxit Software\Foxit Reader\plugins\
+MOZ_PLUGIN_PATH = C:\Program Files (x86)\Foxit Software\Foxit 
+ Reader\plugins\
 # environment
 APPDATA = C:\Users\Admin\AppData\Roaming
 # environment
@@ -223,7 +228,7 @@ PROCESSOR_REVISION = a503
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 165 Stepping 3, GenuineIntel
 # variable set hash-table stats:
-# Load=105/1024=10%, Rehash=0, Collisions=10/131=8%
+# Load=107/1024=10%, Rehash=0, Collisions=11/133=8%
 
 # Pattern-specific Variable Values
 
@@ -269,13 +274,12 @@ all:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 13 / sto 
-rage = 83 B / avg = 6 B
+# strcache buffers: 1 (0) / strings = 13 / storage = 83 B / avg = 6 B
 # current buf: size = 8174 B / used = 83 B / count = 13 / avg = 6 B
 
 # strcache performance: lookups = 17 / hit rate = 23%
 # hash-table stats:
 # Load=13/8192=0%, Rehash=0, Collisions=0/17=0%
-# Finished Make data base on Mon Jun 20 16:18:13 2022
+# Finished Make data base on Tue Jun 21 12:28:35 2022
 
  

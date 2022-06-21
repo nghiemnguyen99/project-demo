@@ -70,7 +70,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	sumpb.RegisterCreateServiceServer(s, &server.Server{})
+	sumpb.RegisterCreateServiceServer(s, &server.Server{DB: container.NewDBContainer(database)})
 
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to start server %s", err)

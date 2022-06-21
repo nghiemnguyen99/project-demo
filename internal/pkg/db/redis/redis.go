@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/go-redis/redis"
 )
@@ -28,7 +29,7 @@ func ConnectRedis(ctx context.Context) {
 func SetToRedis(key string, val interface{}) error {
 	p, err := json.Marshal(val)
 	if err != nil {
-		return err
+		log.Fatalf("set redis failed %v", err)
 	}
 	return redisClient.Set(key, p, 0).Err()
 }
@@ -36,7 +37,7 @@ func SetToRedis(key string, val interface{}) error {
 func GetFromRedis(key string, dest interface{}) error {
 	value, err := redisClient.Get(key).Result()
 	if err != nil {
-		fmt.Println("==============nnnnnnn")
+		log.Fatalf("get redis failed %v", err)
 	}
 	p := []byte(value)
 	return json.Unmarshal(p, dest)
