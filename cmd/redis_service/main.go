@@ -7,7 +7,6 @@ import (
 	"net"
 	"sum/internal/pkg/container"
 	"sum/internal/pkg/db/redis"
-	redisEntity "sum/redis/entity"
 	"sum/redis/server"
 	"sum/redis/sumpb"
 
@@ -60,9 +59,6 @@ func main() {
 	//connect redis
 	ctx := context.Background()
 	redis.ConnectRedis(ctx)
-
-	var dbContainer redisEntity.DBContainer
-	dbContainer.DB = container.NewDBContainer(database)
 
 	lis, err := net.Listen("tcp", "localhost:50069")
 	if err != nil {
