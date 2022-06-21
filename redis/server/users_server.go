@@ -78,5 +78,5 @@ func (s *Server) GetUserByID(ctx context.Context, req *sumpb.GetUserByIDRequest)
 		LastName:  *res.LastName,
 		MSSV:      *res.MSSV,
 		SubjectID: int32(*res.SubjectID),
-	}, redis.SetToRedis("users_"+strconv.Itoa(int(userID)), res)
+	}, nil
 }
