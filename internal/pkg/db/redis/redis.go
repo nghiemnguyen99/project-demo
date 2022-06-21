@@ -37,7 +37,7 @@ func SetToRedis(key string, val interface{}) error {
 func GetFromRedis(key string, dest interface{}) error {
 	value, err := redisClient.Get(key).Result()
 	if err != nil {
-		log.Fatalf("get redis failed %v", err)
+		fmt.Println(err)
 	}
 	p := []byte(value)
 	return json.Unmarshal(p, dest)
